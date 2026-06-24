@@ -1,16 +1,4 @@
 {
-  "functions": {
-    "api/chat.js": {
-      "maxDuration": 30
-    },
-    "api/dexcom.js": {
-      "maxDuration": 15
-    }
-  },
-  "rewrites": [
-    { "source": "/community", "destination": "/diastyle_community.html" },
-    { "source": "/shop", "destination": "/diastyle_shop.html" }
-  ],
   "headers": [
     {
       "source": "/(.*)",
