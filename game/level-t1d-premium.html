@@ -816,6 +816,31 @@ button.link{min-height:44px;padding:0 .4rem;display:inline-flex;align-items:cent
 body.px-lite .scene-col canvas#sceneCanvas{transform:none;transition:none;will-change:auto}
 body.px-lite .stat,body.px-lite .hud-chip,body.px-lite .bubble,body.px-lite .toast{backdrop-filter:none;-webkit-backdrop-filter:none}
 @media (prefers-reduced-motion:reduce){.screen:not(#screenGame) .wrap>*{animation:none}.scene-col canvas#sceneCanvas{transform:none;transition:none}}
+
+/* ---- press feedback: ripple + settle (answers the person's action) ---- */
+.px-rip{position:relative;overflow:hidden;isolation:isolate}
+.px-rip>.px-wave{position:absolute;border-radius:50%;pointer-events:none;z-index:0;width:12px;height:12px;margin:-6px 0 0 -6px;background:currentColor;opacity:.16;transform:scale(0);animation:pxWave .55s var(--ease-out) forwards}
+@keyframes pxWave{to{transform:scale(var(--s,18));opacity:0}}
+.btn:active,.act:active,.qb:active,.opt:active,.pill-btn:active,.hud-btn:active{transform:scale(.965);transition-duration:.08s}
+.act,.qb,.opt,.btn,.pill-btn,.hud-btn,.hud-chip.hud-goal{-webkit-user-select:none;user-select:none}
+:focus-visible{outline-offset:3px;box-shadow:0 0 0 4px rgba(86,104,92,.18)}
+
+/* ---- action dock: selected / newly available motion ---- */
+@keyframes pxPop{0%{transform:scale(.94);opacity:.0}60%{transform:scale(1.02)}100%{transform:none;opacity:1}}
+#dock .act{animation:pxPop .45s var(--ease-out) both}
+#dock .act:nth-child(2){animation-delay:.04s}#dock .act:nth-child(3){animation-delay:.08s}#dock .act:nth-child(4){animation-delay:.12s}#dock .act:nth-child(n+5){animation-delay:.16s}
+.qb:not(.dis):active{box-shadow:0 0 0 3px rgba(223,139,96,.25)}
+
+/* ---- timeline: current moment breathes once it changes ---- */
+@keyframes pxNow{0%{box-shadow:0 0 0 0 rgba(86,104,92,.45)}100%{box-shadow:0 0 0 12px rgba(86,104,92,0)}}
+.timeline .on .dot,.timeline .now .dot,.timeline [aria-current] .dot{animation:pxNow 1.8s ease-out 2}
+
+/* ---- story bubble: arrives with weight ---- */
+.bubble{transition:opacity .35s var(--ease-out),transform .45s var(--ease-out)}
+
+/* ---- low gfx ---- */
+body.px-lite .px-rip>.px-wave,body.px-lite #dock .act{animation:none}
+@media (prefers-reduced-motion:reduce){.px-rip>.px-wave,#dock .act,.timeline [aria-current] .dot{animation:none}}
 </style>
 </head>
 <body>
@@ -7256,6 +7281,18 @@ const Screens = {
     var ob = new MutationObserver(function () { var g = (arrow.textContent || '').trim().charAt(0); if (g in rot) arrow.style.transform = 'scale(1.12)'; setTimeout(function () { arrow.style.transform = ''; }, 420); });
     ob.observe(arrow, { childList: true, characterData: true, subtree: true });
   }
+
+  /* 4. Ripple + haptic tick on press. Delegated listener; never intercepts or cancels the click. */
+  var SEL = '.btn,.act,.qb,.opt,.pill-btn,.hud-btn,.hud-chip.hud-goal,.tab';
+  document.addEventListener('pointerdown', function (e) {
+    var b = e.target.closest && e.target.closest(SEL); if (!b || b.disabled || lite) return;
+    if (!b.classList.contains('px-rip')) b.classList.add('px-rip');
+    var r = b.getBoundingClientRect(), w = document.createElement('span'); w.className = 'px-wave';
+    w.style.left = (e.clientX - r.left) + 'px'; w.style.top = (e.clientY - r.top) + 'px';
+    w.style.setProperty('--s', Math.max(8, Math.max(r.width, r.height) / 5).toFixed(1));
+    b.appendChild(w); setTimeout(function () { if (w.parentNode) w.parentNode.removeChild(w); }, 600);
+    if (e.pointerType === 'touch' && navigator.vibrate && !b.classList.contains('dis')) { try { navigator.vibrate(8); } catch (_) { } }
+  }, { passive: true });
 })();
 
 </script>

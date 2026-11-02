@@ -43,4 +43,16 @@
     var ob = new MutationObserver(function () { var g = (arrow.textContent || '').trim().charAt(0); if (g in rot) arrow.style.transform = 'scale(1.12)'; setTimeout(function () { arrow.style.transform = ''; }, 420); });
     ob.observe(arrow, { childList: true, characterData: true, subtree: true });
   }
+
+  /* 4. Ripple + haptic tick on press. Delegated listener; never intercepts or cancels the click. */
+  var SEL = '.btn,.act,.qb,.opt,.pill-btn,.hud-btn,.hud-chip.hud-goal,.tab';
+  document.addEventListener('pointerdown', function (e) {
+    var b = e.target.closest && e.target.closest(SEL); if (!b || b.disabled || lite) return;
+    if (!b.classList.contains('px-rip')) b.classList.add('px-rip');
+    var r = b.getBoundingClientRect(), w = document.createElement('span'); w.className = 'px-wave';
+    w.style.left = (e.clientX - r.left) + 'px'; w.style.top = (e.clientY - r.top) + 'px';
+    w.style.setProperty('--s', Math.max(8, Math.max(r.width, r.height) / 5).toFixed(1));
+    b.appendChild(w); setTimeout(function () { if (w.parentNode) w.parentNode.removeChild(w); }, 600);
+    if (e.pointerType === 'touch' && navigator.vibrate && !b.classList.contains('dis')) { try { navigator.vibrate(8); } catch (_) { } }
+  }, { passive: true });
 })();
