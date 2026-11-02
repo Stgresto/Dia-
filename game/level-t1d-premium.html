@@ -841,6 +841,21 @@ body.px-lite .stat,body.px-lite .hud-chip,body.px-lite .bubble,body.px-lite .toa
 /* ---- low gfx ---- */
 body.px-lite .px-rip>.px-wave,body.px-lite #dock .act{animation:none}
 @media (prefers-reduced-motion:reduce){.px-rip>.px-wave,#dock .act,.timeline [aria-current] .dot{animation:none}}
+
+/* ======== Omgång 3: tillgänglighet och layout (fynd från granskning) ======== */
+/* Desktop-start: en flex-container med align-items:center klipper toppen när innehållet är högre än fönstret.
+   margin:auto centrerar när det ryms och börjar högst upp när det inte gör det, så att "Logga in" och inställningar alltid går att nå. */
+#screenHome{align-items:flex-start}
+#screenHome .wrap{margin-top:auto;margin-bottom:auto}
+
+/* Klickytor på minst 44 px utan att ändra utseendet: osynlig förlängd träffyta */
+.switch::before{content:'';position:absolute;inset:-7px -4px}
+.act-fab{min-height:44px}
+.bubble button{min-height:44px;min-width:44px;display:inline-flex;align-items:center;padding:0 .4rem;margin-left:-.4rem}
+
+/* Smala skärmar (320 px): ingen klippt text i svårighetsval */
+.dchip{min-width:0}
+.dchip b,.dchip small{white-space:normal;overflow-wrap:anywhere}
 </style>
 </head>
 <body>
