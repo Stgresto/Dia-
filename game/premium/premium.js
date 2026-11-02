@@ -52,7 +52,7 @@
     var r = b.getBoundingClientRect(), w = document.createElement('span'); w.className = 'px-wave';
     w.style.left = (e.clientX - r.left) + 'px'; w.style.top = (e.clientY - r.top) + 'px';
     w.style.setProperty('--s', Math.max(8, Math.max(r.width, r.height) / 5).toFixed(1));
-    b.appendChild(w); setTimeout(function () { if (w.parentNode) w.parentNode.removeChild(w); }, 600);
+    b.appendChild(w); w.addEventListener('animationend', function () { if (w.parentNode) w.parentNode.removeChild(w); }); setTimeout(function () { if (w.parentNode) w.parentNode.removeChild(w); }, 600);
     if (e.pointerType === 'touch' && navigator.vibrate && !b.classList.contains('dis')) { try { navigator.vibrate(8); } catch (_) { } }
   }, { passive: true });
 })();
